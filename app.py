@@ -10,7 +10,7 @@ app = Flask(__name__)
 def index():
     return "<h1>Home Credit Score App</h1>"
 
-DATAPATH = os.getcwd() + '\\Data\\'
+DATAPATH = os.path.dirname(os.getcwd())  + '\\Data\\'
 MODELNAME = 'LogRegr0'
 CLIENTDATA = 'data_processed_min.csv'
 
