@@ -1,3 +1,10 @@
 django
 gunicorn
 django-heroku
+flask
+joblib
+os
+json
+pandas
+numpy
+shap
