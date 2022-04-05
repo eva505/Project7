@@ -10,18 +10,22 @@ app = Flask(__name__)
 def index():
     return "<h1>Home Credit Score App</h1>"
 
-DATAPATH = os.path.dirname(os.getcwd())  + 'Data/'
+
+LOCAL_PATH = os.getcwd()  + '//Data//'
+REMOTE_PATH = 'https://github.com/eva505/Project7/blob/main/Data/'
 MODELNAME = 'LogRegr0'
 CLIENTDATA = 'data_processed_min.csv'
+DATAPATH = REMOTE_PATH
+DATA_URL = DATAPATH + CLIENTDATA
+MODEL_URL = DATAPATH + MODELNAME
+
 
 #load data
-filename = DATAPATH + CLIENTDATA
-df = pd.read_csv(filename).drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
+df = pd.read_csv(DATA_URL).drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
 client_ids_json = client_ids.to_json(orient='records')
 #load estimator
-filename = DATAPATH + MODELNAME
-estimator = joblib.load(filename=filename)
+estimator = joblib.load(filename=MODEL_URL)
 
 
 @app.route('/client_ids', methods=['POST'])
