@@ -14,6 +14,7 @@ CLIENTDATA = 'data_processed_min.csv'
 filename = DATAPATH + CLIENTDATA
 df = pd.read_csv(filename).drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
+client_ids_json = client_ids.to_json(orient='records')
 #load estimator
 filename = DATAPATH + MODELNAME
 estimator = joblib.load(filename=filename)
@@ -21,8 +22,8 @@ estimator = joblib.load(filename=filename)
 
 @app.route('/client_ids', methods=['POST'])
 def return_client_ids(client_ids=client_ids):
-    client_ids = client_ids.to_json(orient='records')
-    return client_ids
+    #client_ids = client_ids.to_json(orient='records')
+    return client_ids_json
 
 @app.route('/client_data', methods=['POST'])
 def return_client_data(df=df):
