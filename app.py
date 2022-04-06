@@ -84,8 +84,12 @@ def return_shapvalues(explainer=explainer):
     client_data = df[client_ids == int(client_id)]
     if len(client_data) :
         print('test1')
+        explainer.explain_row(np.array(client_data).ravel(), max_evals=2000, main_effects=None, error_bounds=None,
+                              batch_size=1, outputs=None, silent=False)
+        print('test1a')
         shap_values = explainer(client_data, max_evals=1500)[0]
         print('test2')
+        
         shap_data = pd.DataFrame(np.array([abs(shap_values.values), shap_values.values, shap_values.data.round(3)]).T, 
                                  index=shap_values.feature_names, 
                                  columns=["SHAP_Strength","SHAP", "Data"])
