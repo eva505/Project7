@@ -36,8 +36,8 @@ estimator = joblib.load(estimator_joblib)
 
 @app.route('/client_ids', methods=['POST'])
 def return_client_ids(client_ids=client_ids):
-    #client_ids = client_ids.to_json(orient='records')
-    return client_ids_json
+    client_ids = client_ids.to_json(orient='records')
+    return client_ids
 
 @app.route('/client_data', methods=['POST'])
 def return_client_data(df=df):
