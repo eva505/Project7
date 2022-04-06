@@ -1,6 +1,6 @@
 from distutils.log import debug
 from flask import Flask, request
-import os, json
+import os, json, sys
 import urllib.request
 import joblib
 import pandas as pd
@@ -82,9 +82,9 @@ def return_shapvalues(explainer=explainer):
     client_id = json.loads(request.data)["client_id"]
     client_data = df[client_ids == int(client_id)]
     if len(client_data) :
-        shap_values = explainer(client_data, max_evals=2000)
-        shap_data = pd.DataFrame(np.array([abs(shap_values[0].values), shap_values[0].values, shap_values[0].data.round(3)]).T, 
-                                 index=shap_values[0].feature_names, 
+        shap_values = explainer(client_data, max_evals=1500)[0]
+        shap_data = pd.DataFrame(np.array([abs(shap_values.values), shap_values.values, shap_values.data.round(3)]).T, 
+                                 index=shap_values.feature_names, 
                                  columns=["SHAP_Strength","SHAP", "Data"]).sort_values(by="SHAP_Strength", ascending=False)
     else :
         shap_data = None
