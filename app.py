@@ -80,13 +80,19 @@ def return_prediction(estimator=estimator):
 def return_shapvalues(explainer=explainer):
     #client_data = pd.read_json(json.loads(request.data)["client_data"])
     client_id = json.loads(request.data)["client_id"]
+    print('test0')
     client_data = df[client_ids == int(client_id)]
     if len(client_data) :
+        print('test1')
         shap_values = explainer(client_data, max_evals=1500)[0]
+        print('test2')
         shap_data = pd.DataFrame(np.array([abs(shap_values.values), shap_values.values, shap_values.data.round(3)]).T, 
                                  index=shap_values.feature_names, 
                                  columns=["SHAP_Strength","SHAP", "Data"])
+        print('test3')
         shap_data = shap_data.sort_values(by="SHAP_Strength", ascending=False).iloc[:50,:]
+        print('test4')
+
     else :
         shap_data = None
     return json.dumps({'SHAP_data' : shap_data.to_json()})
