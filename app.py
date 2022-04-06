@@ -66,7 +66,9 @@ def return_client_data(df=df):
 @app.route('/prediction', methods=['POST'])
 def return_prediction(estimator=estimator):
     #utiliser la fonction présedent
-    client_data = pd.read_json(json.loads(request.data)["client_data"])
+    #client_data = pd.read_json(json.loads(request.data)["client_data"])
+    client_id = json.loads(request.data)["client_id"]
+    client_data = df[client_ids == int(client_id)]
     if len(client_data) :
         y_pred = estimator.predict_proba(client_data)[:, 1][0]
     else :
@@ -76,7 +78,9 @@ def return_prediction(estimator=estimator):
 #send feature importance
 @app.route('/shapvalues', methods=['POST'])
 def return_shapvalues(explainer=explainer):
-    client_data = pd.read_json(json.loads(request.data)["client_data"])
+    #client_data = pd.read_json(json.loads(request.data)["client_data"])
+    client_id = json.loads(request.data)["client_id"]
+    client_data = df[client_ids == int(client_id)]
     if len(client_data) :
         shap_values = explainer(client_data, max_evals=2000)
         shap_data = pd.DataFrame(np.array([abs(shap_values[0].values), shap_values[0].values, shap_values[0].data.round(3)]).T, 
