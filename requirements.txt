@@ -1,6 +1,5 @@
 django
 gunicorn
-psycopg2-binary
 django-heroku
 flask
 joblib
@@ -9,6 +8,3 @@ numpy
 imblearn
 sklearn
 shap
-streamlit
-requests
-plotly
