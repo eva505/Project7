@@ -7,12 +7,12 @@ import pandas as pd
 import numpy as np
 import shap
 
+local = False
+
 app = Flask(__name__)
 @app.route('/')
 def index():
     return "<h1>Home Credit Score App</h1>"
-
-local = True
 
 LOCAL_PATH = os.getcwd()  + '//Data//'
 REMOTE_PATH = 'https://raw.githubusercontent.com/eva505/Project7/main/Data/'
