@@ -85,7 +85,8 @@ def return_shapvalues(explainer=explainer):
         shap_values = explainer(client_data, max_evals=1500)[0]
         shap_data = pd.DataFrame(np.array([abs(shap_values.values), shap_values.values, shap_values.data.round(3)]).T, 
                                  index=shap_values.feature_names, 
-                                 columns=["SHAP_Strength","SHAP", "Data"]).sort_values(by="SHAP_Strength", ascending=False)
+                                 columns=["SHAP_Strength","SHAP", "Data"])
+        shap_data = shap_data.sort_values(by="SHAP_Strength", ascending=False).iloc[:50,:]
     else :
         shap_data = None
     return json.dumps({'SHAP_data' : shap_data.to_json()})
