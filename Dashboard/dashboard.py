@@ -1,5 +1,4 @@
 import streamlit as st
-import psycopg2
 import pandas as pd
 import requests
 import plotly.graph_objs as go
