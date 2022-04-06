@@ -7,7 +7,8 @@ import pandas as pd
 import numpy as np
 import shap
 
-local = True
+local = False
+git_branch = 'dev0'
 
 app = Flask(__name__)
 @app.route('/')
@@ -15,7 +16,7 @@ def index():
     return "<h1>Home Credit Score App</h1>"
 
 LOCAL_PATH = os.getcwd()  + '//Data//'
-REMOTE_PATH = 'https://raw.githubusercontent.com/eva505/Project7/main/Data/'
+REMOTE_PATH = 'https://raw.githubusercontent.com/eva505/Project7/'+git_branch+'/Data/'
 MODELNAME = 'LogRegr0'
 CLIENTDATA = 'data_processed_min.csv'
 SHAPNAME = 'LogRegr0_SHAP'
