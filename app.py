@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import shap
 
-local = False
+local = True
 
 app = Flask(__name__)
 @app.route('/')
@@ -32,20 +32,19 @@ SHAP_URL = DATAPATH + SHAPNAME
 df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
 client_ids_json = client_ids.to_json(orient='records')
-#load estimator and create shap explainer
+df = df.drop(columns=['SK_ID_CURR', 'TARGET'])
+#load estimator and shap explainer
 if local :
     estimator = joblib.load(MODEL_URL)
-    #with open(SHAP_URL, "rb") as e:
-        #explainer = shap.Explainer.load(e)
+    with open(SHAP_URL, "rb") as e:
+        explainer = shap.Explainer.load(e)
 else :
     estimator = joblib.load(urllib.request.urlopen(MODEL_URL))
-    #with urllib.request.urlopen(SHAP_URL) as e:
-        #explainer = shap.Explainer.load(e)
-explainer = shap.Explainer(estimator.predict, df)
+    with urllib.request.urlopen(SHAP_URL) as e:
+        explainer = shap.Explainer.load(e)
 
 
-
-#sent client ids
+#send client ids
 @app.route('/client_ids', methods=['POST'])
 def return_client_ids(client_ids=client_ids):
     client_ids = client_ids.to_json(orient='records')
@@ -59,7 +58,7 @@ def return_client_data(df=df):
         client_id = int(client_id)
     except:
         client_id = None
-    client_data = df[df['SK_ID_CURR'] == client_id]
+    client_data = df[client_ids == client_id]
     return json.dumps({'data' : client_data.to_json()})
 
 #send client default risk
