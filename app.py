@@ -1,4 +1,5 @@
 from flask import Flask, request
+import urllib.request
 import joblib, os, json
 import pandas as pd
 import numpy as np
@@ -12,20 +13,25 @@ def index():
 
 
 LOCAL_PATH = os.getcwd()  + '//Data//'
-REMOTE_PATH = 'https://github.com/eva505/Project7/blob/main/Data/'
+REMOTE_PATH = 'https://raw.githubusercontent.com/eva505/Project7/main/Data/'
 MODELNAME = 'LogRegr0'
 CLIENTDATA = 'data_processed_min.csv'
+
 DATAPATH = REMOTE_PATH
 DATA_URL = DATAPATH + CLIENTDATA
 MODEL_URL = DATAPATH + MODELNAME
 
 
+
+
+
 #load data
-df = pd.read_csv(DATA_URL).drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
+df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
 client_ids_json = client_ids.to_json(orient='records')
 #load estimator
-estimator = joblib.load(filename=MODEL_URL)
+estimator_joblib = urllib.request.urlopen(MODEL_URL)
+estimator = joblib.load(estimator_joblib)
 
 
 @app.route('/client_ids', methods=['POST'])
