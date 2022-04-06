@@ -8,3 +8,6 @@ numpy
 imblearn
 sklearn
 shap
+streamlit
+requests
+plotly
