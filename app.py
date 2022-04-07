@@ -86,20 +86,11 @@ def return_shapvalues(explainer=explainer):
     client_id = json.loads(request.data)["client_id"]
     client_data = df[client_ids == int(client_id)]
     if len(client_data) :
-        print('test1')
-        #explainer.explain_row(np.array(client_data).ravel(), max_evals=2000, main_effects=None, error_bounds=None,
-        #                      batch_size=1, outputs=None, silent=True)
-        #print('test1a')
-        shap_values = explainer(client_data, max_evals=1500)[0]
-        print('test2')
-        
+        shap_values = explainer(client_data, max_evals=1500)[0]        
         shap_data = pd.DataFrame(np.array([abs(shap_values.values), shap_values.values, shap_values.data.round(3)]).T, 
                                  index=shap_values.feature_names, 
                                  columns=["SHAP_Strength","SHAP", "Data"])
-        print('test3')
-        shap_data = shap_data.sort_values(by="SHAP_Strength", ascending=False).iloc[:50,:]
-        print('test4')
-
+        shap_data = shap_data.sort_values(by="SHAP_Strength", ascending=False)
     else :
         shap_data = None
     return json.dumps({'SHAP_data' : shap_data.to_json()})
