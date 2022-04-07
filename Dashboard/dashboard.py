@@ -84,7 +84,7 @@ def create_gauge(prediction):
 
 def create_feature_importance(client_data, n_features=15):
     data = client_data.iloc[:n_features, :].filter(['SHAP', 'Data'])
-    rest_name = 'Remaining ' + str(len(client_data)-n_features) +' Features'
+    rest_name = 'Following ' + str(len(client_data)-n_features) +' Features'
     rest = pd.DataFrame([[client_data['SHAP'].iloc[n_features:].sum(axis=0), np.nan]], index=[rest_name],
                         columns=['SHAP', 'Data'])
     data=pd.concat([data, rest]).iloc[::-1,:]
