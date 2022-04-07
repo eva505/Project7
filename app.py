@@ -38,6 +38,7 @@ client_ids_json = client_ids.to_json(orient='records')
 #load features and filter the data to only include these features
 features = pd.read_csv(FEATURE_URL, sep=',').drop(columns='Unnamed: 0')['features'].values
 df = df.filter(items=features)
+max_evals_explainer = 2*len(features)
 #load estimator and shap explainer
 if local :
     estimator = joblib.load(MODEL_URL)
@@ -86,7 +87,7 @@ def return_shapvalues(explainer=explainer):
     client_id = json.loads(request.data)["client_id"]
     client_data = df[client_ids == int(client_id)]
     if len(client_data) :
-        shap_values = explainer(client_data, max_evals=1500)[0]        
+        shap_values = explainer(client_data, max_evals=max_evals_explainer)[0]        
         shap_data = pd.DataFrame(np.array([abs(shap_values.values), shap_values.values, shap_values.data.round(3)]).T, 
                                  index=shap_values.feature_names, 
                                  columns=["SHAP_Strength","SHAP", "Data"])
