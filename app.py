@@ -7,7 +7,7 @@ import shap
 
 #where to get data from - local or GitHub, if GitHub then choose the correct branch
 local = False
-git_branch = 'dev1'
+git_branch = 'main'
 
 app = Flask(__name__)
 @app.route('/')
