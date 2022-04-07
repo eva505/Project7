@@ -5,6 +5,9 @@ A home credit scoring API, which returns the probability of a client defaulting 
 ## How-to-Launch-App
 
 Open the following link in a webbrowser :  
+https://share.streamlit.io/eva505/project7/dev1/Dashboard/dashboard.py
+
+For version 0.1 :  
 https://share.streamlit.io/eva505/project7/main/Dashboard/dashboard.py
 
 ## Description
@@ -17,6 +20,7 @@ Eva Bookjans
 
 ## Version History
 * 0.1
+    * 0.1.1 updated model in preparation for version 0.2
     * Initial Release
 
 ## Original Data from the Home Credit Group
