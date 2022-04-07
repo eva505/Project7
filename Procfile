@@ -1,1 +1,1 @@
-web: gunicorn wsgi:app --preload --max-requests 5
+web: gunicorn wsgi:app --preload --max-requests 1200
