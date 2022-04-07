@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 import plotly.graph_objs as go
 
-local = True
+local = False
 
 def initialize():
     if 'home' not in st.session_state :
@@ -74,10 +74,14 @@ def create_gauge(prediction):
 
 LOCALHOST_URI = 'http://127.0.0.1:5000'
 REMOTEHOST_URI = 'https://home-credit-score.herokuapp.com'
-HOST_URI = LOCALHOST_URI
+if local :
+    HOST_URI = LOCALHOST_URI
+else :
+    HOST_URI = REMOTEHOST_URI
 CLIENTS_URI = HOST_URI + '/client_ids'
 CLIENT_DATA_URI = HOST_URI + '/client_data'
 PREDICTION_URI = HOST_URI + '/prediction'
+
 client_ids = load_client_ids(CLIENTS_URI)
 initialize()
 

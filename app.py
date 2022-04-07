@@ -6,7 +6,7 @@ import numpy as np
 import shap
 
 #where to get data from - local or GitHub, if GitHub then choose the correct branch
-local = True
+local = False
 git_branch = 'dev1'
 
 app = Flask(__name__)
