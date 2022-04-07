@@ -32,9 +32,9 @@ def load_client_data(client_id, clients_data_uri):
     return pd.read_json(response.json()["data"])
 
 @st.experimental_memo
-def get_client_prediction(client_data, prediction_uri):
+def get_client_prediction(client_id, prediction_uri):
     headers = {"Content-Type": "application/json"}
-    data_json = {'client_data': client_data.to_json(orient='records')}
+    data_json = {'client_id': str(client_id)}
     response = requests.request(method='POST', headers=headers, url=prediction_uri, json=data_json)
     return float(response.json()["pred"])
 
@@ -72,7 +72,7 @@ def create_gauge(prediction):
 
 LOCALHOST_URI = 'http://127.0.0.1:5000'
 REMOTEHOST_URI = 'https://home-credit-score.herokuapp.com'
-HOST_URI = REMOTEHOST_URI
+HOST_URI = LOCALHOST_URI
 CLIENTS_URI = HOST_URI + '/client_ids'
 CLIENT_DATA_URI = HOST_URI + '/client_data'
 PREDICTION_URI = HOST_URI + '/prediction'
@@ -94,7 +94,7 @@ with title_col1 :
 if st.session_state.home == False:
     try :
         client_data = load_client_data(st.session_state.client_id, CLIENT_DATA_URI)
-        prediction = get_client_prediction(client_data, PREDICTION_URI)
+        prediction = get_client_prediction(st.session_state.client_id, PREDICTION_URI)
         with title_col2 :
             st.write('### Default Risk')
             st.plotly_chart(create_gauge(prediction), use_container_width=True)
