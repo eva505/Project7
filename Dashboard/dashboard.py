@@ -3,6 +3,8 @@ import pandas as pd
 import requests
 import plotly.graph_objs as go
 
+local = True
+
 def initialize():
     if 'home' not in st.session_state :
         st.session_state.home = True

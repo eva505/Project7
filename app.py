@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import shap
 
+#where to get data from - local or GitHub, if GitHub then choose the correct branch
 local = True
 git_branch = 'dev1'
 
