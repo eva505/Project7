@@ -6,7 +6,7 @@ import requests
 import plotly.graph_objs as go
 import plotly.express as px
 
-local = False
+local = True
 
 def initialize():
     if 'home' not in st.session_state :

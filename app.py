@@ -19,6 +19,7 @@ LOCAL_PATH = os.getcwd()  + '//Data//'
 REMOTE_PATH = 'https://raw.githubusercontent.com/eva505/Project7/'+git_branch+'/Data/'
 MODELNAME = 'LogRegr0'
 CLIENTDATA = 'data_processed_min.csv'
+FEATURES = 'features.csv'
 SHAPNAME = 'LogRegr0_SHAP'
 
 if local :
@@ -26,6 +27,7 @@ if local :
 else :
     DATAPATH = REMOTE_PATH
 DATA_URL = DATAPATH + CLIENTDATA
+FEATURE_URL = DATAPATH + FEATURES
 MODEL_URL = DATAPATH + MODELNAME
 SHAP_URL = DATAPATH + SHAPNAME
 
@@ -33,7 +35,9 @@ SHAP_URL = DATAPATH + SHAPNAME
 df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
 client_ids_json = client_ids.to_json(orient='records')
-df = df.drop(columns=['SK_ID_CURR', 'TARGET'])
+#load features and filter the data to only include these features
+features = pd.read_csv(FEATURE_URL, sep=',').drop(columns='Unnamed: 0')['features'].values
+df = df.filter(items=features)
 #load estimator and shap explainer
 if local :
     estimator = joblib.load(MODEL_URL)
@@ -80,13 +84,12 @@ def return_prediction(estimator=estimator):
 def return_shapvalues(explainer=explainer):
     #client_data = pd.read_json(json.loads(request.data)["client_data"])
     client_id = json.loads(request.data)["client_id"]
-    print('test0')
     client_data = df[client_ids == int(client_id)]
     if len(client_data) :
         print('test1')
-        explainer.explain_row(np.array(client_data).ravel(), max_evals=2000, main_effects=None, error_bounds=None,
-                              batch_size=1, outputs=None, silent=True)
-        print('test1a')
+        #explainer.explain_row(np.array(client_data).ravel(), max_evals=2000, main_effects=None, error_bounds=None,
+        #                      batch_size=1, outputs=None, silent=True)
+        #print('test1a')
         shap_values = explainer(client_data, max_evals=1500)[0]
         print('test2')
         
