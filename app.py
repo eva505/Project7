@@ -85,7 +85,7 @@ def return_shapvalues(explainer=explainer):
     if len(client_data) :
         print('test1')
         explainer.explain_row(np.array(client_data).ravel(), max_evals=2000, main_effects=None, error_bounds=None,
-                              batch_size=1, outputs=None, silent=False)
+                              batch_size=1, outputs=None, silent=True)
         print('test1a')
         shap_values = explainer(client_data, max_evals=1500)[0]
         print('test2')
