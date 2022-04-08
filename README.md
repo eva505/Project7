@@ -17,8 +17,10 @@ https://share.streamlit.io/eva505/project7/main/Dashboard/dashboard.py
 Eva Bookjans
 
 ## Version History
+* 0.1
+    * Added "Feature Importance" Functionality
 * 0.0
-    * 0.0.1 updated model in preparation for version 0.2
+    * 0.0.1 updated model in preparation for version 0.1
     * Initial Release
 
 ## Original Data from the Home Credit Group
