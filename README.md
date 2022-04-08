@@ -3,7 +3,6 @@
 A home credit scoring API, which returns the probability of a client defaulting (or not) based on the client's application and other data that has been collected by the credit lender.
 
 ## How-to-Launch-App
-Working on new features : i.e the showing of the feature importances
 
 Open the following link in a webbrowser :  
 https://share.streamlit.io/eva505/project7/main/Dashboard/dashboard.py
@@ -18,6 +17,7 @@ Eva Bookjans
 
 ## Version History
 * 0.1
+    * 0.0.1 working API
     * Added "Feature Importance" Functionality
 * 0.0
     * 0.0.1 updated model in preparation for version 0.1
