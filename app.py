@@ -9,7 +9,7 @@ import shap
 
 #where to get data from - local or GitHub, if GitHub then choose the correct branch
 local = False
-git_branch = 'main'
+git_branch = 'dev0'
 
 app = Flask(__name__)
 @app.route('/')
@@ -40,6 +40,7 @@ SHAPVALUES_URL = DATAPATH + SHAPVALUESNAME
 #load data
 df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
+client_defaulted = df['TARGET']
 client_ids_json = client_ids.to_json(orient='records')
 #load features and filter the data to only include these features
 features = pd.read_csv(FEATURE_URL, sep=',').drop(columns='Unnamed: 0')['features'].values
@@ -56,6 +57,7 @@ else :
         #explainer = shap.Explainer.load(e)
     explainer = joblib.load(urllib.request.urlopen(SHAPVALUES_URL))
 
+#HELPER FUNCTIONS
 
 def client_shap_data(client_id) :
     client_data = df[client_ids == int(client_id)]
@@ -72,6 +74,46 @@ def client_shap_data(client_id) :
         shap_data = None
     return shap_data
 
+#functions for producing the data filter on the features
+def filter_feature(key):
+    d = {'gender' : 'APPL_CODE_GENDER',
+         'defaulted' : 'TARGET',
+         'income' : 'APPL_AMT_INCOME_TOTAL'}
+    return d[key]
+
+def filter_function(comp, value, ref=None):
+    if ref == None :
+        d = {'eq' : lambda x : x == value,
+             'range' : lambda x : (x <= x.mean()*(1+value/200)) & (x >= x.mean()*(1-value/200))}
+    else :
+        d = {'eq' : lambda x : x == value,
+             'range' : lambda x : (x <= ref*(1+value/200)) & (x >= ref*(1-value/200))}
+    return d[comp]
+
+def create_select(series, func_type, value, client_index):
+    ref = series[series.index == client_index].values[0]
+    select = filter_function(func_type, value, ref)(series)
+    return select
+
+def create_mask(filter_dict, client_id):
+    select = pd.Series([True]*len(df), name='Filter')
+    try:
+        client_index = df[client_ids == client_id].index.values[0]
+    except:
+        client_index = None
+    for filter in filter_dict.values():
+        feature_type = filter['type']
+        if feature_type == 'defaulted':
+            series = client_defaulted
+        else :
+            series = df[filter_feature(feature_type)]
+        func_type = filter['func']
+        value = filter['value']
+        select = select & create_select(series, func_type, value, client_index)
+    return select
+
+
+#APP ROUTES
 
 #send client ids
 @app.route('/client_ids', methods=['POST'])
@@ -110,6 +152,23 @@ def return_shapvalues():
     client_id = json.loads(request.data)["client_id"]
     shap_data = client_shap_data(client_id)
     return json.dumps({'SHAP_data' : shap_data.to_json()})
+
+#send filter
+@app.route('/filter', methods=['POST'])
+def return_filter():
+    filter_dict = json.loads(request.data)["filter_dict"]
+    client_id = int(json.loads(request.data)["client_id"])
+    select = create_mask(filter_dict, client_id)
+    return json.dumps({'feature_filter' : select.to_json(orient='records')})
+
+#send feature data
+@app.route('/features', methods=['POST'])
+def return_feature(df=df):
+    feature = json.loads(request.data)["feature"]
+    data = df[feature]
+    return json.dumps({'feature_data' : data.to_json(orient='records')})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

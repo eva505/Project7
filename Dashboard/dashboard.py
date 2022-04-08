@@ -5,9 +5,11 @@ import numpy as np
 import requests
 import plotly.graph_objs as go
 import plotly.express as px
+from plotly.subplots import make_subplots
+
 
 #whether or not we are connecting to the local server or Heroku
-local = False
+local = True
 
 def initialize():
     if 'home' not in st.session_state :
@@ -20,6 +22,17 @@ def initialize():
         st.session_state.client_id = None
     if st.session_state.home == True :
         st.session_state.client_id = None
+
+def initialize_filter():
+    st.session_state.filter_dict = {}
+    i = 0
+    for state_instance in st.session_state.keys():
+        if state_instance.startswith('select') and (st.session_state[state_instance] == True):
+            filter_list = state_instance.split('_')
+            st.session_state.filter_dict[i] = {'type' : filter_list[1],
+                                               'func' : filter_list[2],
+                                               'value' : float(filter_list[3])}
+            i += 1
 
 def client_id_submitted():
     st.session_state.home = False
@@ -50,6 +63,20 @@ def get_client_feature_importance(client_id, shap_uri):
     data_json = {'client_id': str(client_id)}
     response = requests.request(method='POST', headers=headers, url=shap_uri, json=data_json)
     return pd.read_json(response.json()["SHAP_data"])
+
+@st.cache
+def load_feature_filter(feature_filter_uri):
+    headers = {"Content-Type": "application/json"}
+    data_json = {'filter_dict' : st.session_state.filter_dict,
+                 'client_id' : str(st.session_state.client_id)}
+    response = requests.request(method='POST', headers=headers, url=feature_filter_uri, json=data_json)
+    return pd.read_json(response.json()["feature_filter"])
+
+def load_feature_data(feature_name, feature_uri):
+    headers = {"Content-Type": "application/json"}
+    data_json = {'feature': feature_name}
+    response = requests.request(method='POST', headers=headers, url=feature_uri, json=data_json)
+    return pd.read_json(response.json()["feature_data"])
 
 def create_gauge(prediction):
     steps_range = [0, 0.2, 0.4, 0.6, 0.8, 1.0]
@@ -96,6 +123,24 @@ def create_feature_importance(client_data, n_features=15):
     fig.update_xaxes(range = [-0.5,0.5])
     return fig
 
+def create_feature_comparison(feature_data, select, vline):
+    # Group data together
+    selected_data = (feature_data.mask(~select).dropna().values.ravel())
+    feature_data = (feature_data.dropna().values.ravel())
+    hist_data = [feature_data, selected_data]
+    group_labels = ['All Clients', 'Filtered']
+    colors = ['cornflowerblue', 'tomato']
+    linecolors =['darkblue', 'darkred']
+
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[1,4], vertical_spacing=0.1)
+    for x, label, color, linecolor in zip(hist_data, group_labels, colors, linecolors):
+        fig.add_trace(go.Box(x=x, name=label, legendgroup=label, fillcolor=color, line={'color':linecolor},
+                             boxmean=True, showlegend=False), row=1, col=1)
+        fig.add_trace(go.Histogram(x=x, name=label, legendgroup=label, marker={'color':color}, ), 
+                      row=2, col=1)
+    fig.add_vline(vline)
+    return fig
+
 LOCALHOST_URI = 'http://127.0.0.1:5000'
 REMOTEHOST_URI = 'https://home-credit-score.herokuapp.com'
 if local :
@@ -106,6 +151,9 @@ CLIENTS_URI = HOST_URI + '/client_ids'
 CLIENT_DATA_URI = HOST_URI + '/client_data'
 PREDICTION_URI = HOST_URI + '/prediction'
 SHAP_URI = HOST_URI + '/shapvalues'
+FEATURE_URI = HOST_URI + '/features'
+FEATURE_FILTER_URI = HOST_URI + '/filter'
+
 
 client_ids = load_client_ids(CLIENTS_URI)
 initialize()
@@ -138,6 +186,39 @@ if st.session_state.home == False:
                   key='n_features', disabled=False)
         st.plotly_chart(create_feature_importance(shap_data, int(st.session_state.n_features)), 
                         use_container_width=True)
+
+        #Show feature comparisons
+        st.write('### Feature Comparisions among Clients')
+        #Add a filter
+        st.write('#### Filter Options')
+        filter_col1, filter_col2, filter_col3 = st.columns(3)
+        with filter_col1:
+            st.write('Gender')
+            client_gender = load_feature_data('APPL_CODE_GENDER', FEATURE_URI).copy()
+            client_gender = client_gender.iloc[client_ids.index(int(st.session_state.client_id))].values[0]
+            st.checkbox('1', value=(client_gender==1), key='select_gender_eq_1')
+            st.checkbox('0', value=(client_gender==0), key='select_gender_eq_0')
+        with filter_col2:
+            st.write('Defaulted')
+            st.checkbox('Yes', value=(prediction >= 0.5), key='select_defaulted_eq_1')
+            st.checkbox('No', value=(prediction < 0.5), key='select_defaulted_eq_0')
+        with filter_col3:
+            st.write('Income Range')
+            st.checkbox("+/- 10% of client's", value=False, key='select_income_range_10')
+            st.checkbox("+/- 20% of client's", value=False, key='select_income_range_20')
+        initialize_filter()
+
+        select = load_feature_filter(FEATURE_FILTER_URI).copy()
+        #show the features
+        for i in range(3):
+            num=i+1
+            feature_key = 'feature'+str(num)+'_selected'
+            st.write('#### Feature #' + str(num))
+            st.selectbox("Select Feature #"+str(num), options=shap_data.index.values[:50], index=i, key=feature_key)
+            feature = st.session_state[feature_key]
+            feature_data = load_feature_data(feature, FEATURE_URI).copy()
+            client_value = feature_data.iloc[client_ids.index(int(st.session_state.client_id))].values[0]
+            st.plotly_chart(create_feature_comparison(feature_data, select, client_value))
     except :
         st.write("Something went wrong... try refreshing the page....")
     
