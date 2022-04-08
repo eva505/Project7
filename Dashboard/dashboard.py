@@ -9,7 +9,7 @@ from plotly.subplots import make_subplots
 
 
 #whether or not we are connecting to the local server or Heroku
-local = True
+local = False
 
 def initialize():
     if 'home' not in st.session_state :
@@ -142,7 +142,7 @@ def create_feature_comparison(feature_data, select, vline):
     return fig
 
 LOCALHOST_URI = 'http://127.0.0.1:5000'
-REMOTEHOST_URI = 'https://home-credit-score.herokuapp.com'
+REMOTEHOST_URI = 'https://home-credit-score-dev.herokuapp.com'
 if local :
     HOST_URI = LOCALHOST_URI
 else :
@@ -194,8 +194,8 @@ if st.session_state.home == False:
         filter_col1, filter_col2, filter_col3 = st.columns(3)
         with filter_col1:
             st.write('Gender')
-            client_gender = load_feature_data('APPL_CODE_GENDER', FEATURE_URI).copy()
-            client_gender = client_gender.iloc[client_ids.index(int(st.session_state.client_id))].values[0]
+            client_gender = load_feature_data('APPL_CODE_GENDER', FEATURE_URI).copy(
+                            ).client_gender.iloc[client_ids.index(int(st.session_state.client_id))].values[0]
             st.checkbox('1', value=(client_gender==1), key='select_gender_eq_1')
             st.checkbox('0', value=(client_gender==0), key='select_gender_eq_0')
         with filter_col2:
