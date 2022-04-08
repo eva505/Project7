@@ -194,14 +194,14 @@ if st.session_state.home == False:
         filter_col1, filter_col2, filter_col3 = st.columns(3)
         with filter_col1:
             st.write('Gender')
-            client_gender = load_feature_data('APPL_CODE_GENDER', FEATURE_URI).copy(
-                            ).client_gender.iloc[client_ids.index(int(st.session_state.client_id))].values[0]
-            st.checkbox('1', value=(client_gender==1), key='select_gender_eq_1')
-            st.checkbox('0', value=(client_gender==0), key='select_gender_eq_0')
+            #client_gender = load_feature_data('APPL_CODE_GENDER', FEATURE_URI).copy(
+            #                ).client_gender.iloc[client_ids.index(int(st.session_state.client_id))].values[0]
+            st.checkbox('1', value=(False), key='select_gender_eq_1')
+            st.checkbox('0', value=(False), key='select_gender_eq_0')
         with filter_col2:
             st.write('Defaulted')
-            st.checkbox('Yes', value=(prediction >= 0.5), key='select_defaulted_eq_1')
-            st.checkbox('No', value=(prediction < 0.5), key='select_defaulted_eq_0')
+            st.checkbox('Yes', value=(False), key='select_defaulted_eq_1')
+            st.checkbox('No', value=(False), key='select_defaulted_eq_0')
         with filter_col3:
             st.write('Income Range')
             st.checkbox("+/- 10% of client's", value=False, key='select_income_range_10')
