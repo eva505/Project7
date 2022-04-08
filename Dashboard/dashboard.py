@@ -6,7 +6,8 @@ import requests
 import plotly.graph_objs as go
 import plotly.express as px
 
-local = False
+#whether or not we are connecting to the local server or Heroku
+local = True
 
 def initialize():
     if 'home' not in st.session_state :

@@ -18,9 +18,13 @@ def index():
 LOCAL_PATH = os.getcwd()  + '//Data//'
 REMOTE_PATH = 'https://raw.githubusercontent.com/eva505/Project7/'+git_branch+'/Data/'
 MODELNAME = 'LogRegr0'
-CLIENTDATA = 'data_processed_min.csv'
+if local:
+    CLIENTDATA = 'data_processed_min.csv'
+else :
+    CLIENTDATA = 'data_processed_min_min.csv'
 FEATURES = 'features.csv'
 SHAPNAME = 'LogRegr0_SHAP'
+SHAPVALUESNAME = 'LogRegr0_SHAPvalues'
 
 if local :
     DATAPATH = LOCAL_PATH
@@ -30,6 +34,7 @@ DATA_URL = DATAPATH + CLIENTDATA
 FEATURE_URL = DATAPATH + FEATURES
 MODEL_URL = DATAPATH + MODELNAME
 SHAP_URL = DATAPATH + SHAPNAME
+SHAPVALUES_URL = DATAPATH + SHAPVALUESNAME
 
 #load data
 df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
@@ -46,8 +51,10 @@ if local :
         explainer = shap.Explainer.load(e)
 else :
     estimator = joblib.load(urllib.request.urlopen(MODEL_URL))
-    with urllib.request.urlopen(SHAP_URL) as e:
-        explainer = shap.Explainer.load(e)
+    #with urllib.request.urlopen(SHAP_URL) as e:
+        #explainer = shap.Explainer.load(e)
+    explainer = joblib.load(urllib.request.urlopen(SHAPVALUES_URL))
+
 
 
 #send client ids
@@ -87,7 +94,10 @@ def return_shapvalues(explainer=explainer):
     client_id = json.loads(request.data)["client_id"]
     client_data = df[client_ids == int(client_id)]
     if len(client_data) :
-        shap_values = explainer(client_data, max_evals=max_evals_explainer)[0]        
+        if local :
+            shap_values = explainer(client_data, max_evals=max_evals_explainer)[0]
+        else :
+            pass      
         shap_data = pd.DataFrame(np.array([abs(shap_values.values), shap_values.values, shap_values.data.round(3)]).T, 
                                  index=shap_values.feature_names, 
                                  columns=["SHAP_Strength","SHAP", "Data"])
