@@ -5,6 +5,10 @@ A home credit scoring API, which returns the probability of a client defaulting 
 ## How-to-Launch-App
 
 Open the following link in a webbrowser :  
+https://share.streamlit.io/eva505/project7/dev0/Dashboard/dashboard.py
+
+
+Version 0.1.1:
 https://share.streamlit.io/eva505/project7/main/Dashboard/dashboard.py
 
 ## Description
@@ -16,6 +20,9 @@ https://share.streamlit.io/eva505/project7/main/Dashboard/dashboard.py
 Eva Bookjans
 
 ## Version History
+* 0.2
+    * 0.2.0 Updated README
+    * Added "Added 'Feature Comparison' Functionality
 * 0.1
     * 0.1.1 working API
     * Added "Feature Importance" Functionality
