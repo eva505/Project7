@@ -17,7 +17,7 @@ Eva Bookjans
 
 ## Version History
 * 0.1
-    * 0.0.1 working API
+    * 0.1.1 working API
     * Added "Feature Importance" Functionality
 * 0.0
     * 0.0.1 updated model in preparation for version 0.1
