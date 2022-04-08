@@ -43,7 +43,7 @@ client_ids_json = client_ids.to_json(orient='records')
 #load features and filter the data to only include these features
 features = pd.read_csv(FEATURE_URL, sep=',').drop(columns='Unnamed: 0')['features'].values
 df = df.filter(items=features)
-max_evals_explainer = 2*len(features)
+max_evals_explainer = 2*2*len(features)
 #load estimator and shap explainer
 if local :
     estimator = joblib.load(MODEL_URL)
@@ -55,6 +55,21 @@ else :
         #explainer = shap.Explainer.load(e)
     explainer = joblib.load(urllib.request.urlopen(SHAPVALUES_URL))
 
+
+def client_shap_data(client_id) :
+    client_data = df[client_ids == int(client_id)]
+    if len(client_data) :
+        if local :
+            shap_value = explainer(client_data, max_evals=max_evals_explainer)[0]
+        else :
+            shap_value = explainer[client_ids[client_ids == int(client_id)].index.values[0]]   
+        shap_data = pd.DataFrame(np.array([abs(shap_value.values), shap_value.values, shap_value.data.round(3)]).T, 
+                                  index=shap_value.feature_names, 
+                                  columns=["SHAP_Strength","SHAP", "Data"])
+        shap_data = shap_data.sort_values(by="SHAP_Strength", ascending=False)
+    else :
+        shap_data = None
+    return shap_data
 
 
 #send client ids
@@ -89,21 +104,10 @@ def return_prediction(estimator=estimator):
 
 #send feature importance
 @app.route('/shapvalues', methods=['POST'])
-def return_shapvalues(explainer=explainer):
+def return_shapvalues():
     #client_data = pd.read_json(json.loads(request.data)["client_data"])
     client_id = json.loads(request.data)["client_id"]
-    client_data = df[client_ids == int(client_id)]
-    if len(client_data) :
-        if local :
-            shap_values = explainer(client_data, max_evals=max_evals_explainer)[0]
-        else :
-            pass      
-        shap_data = pd.DataFrame(np.array([abs(shap_values.values), shap_values.values, shap_values.data.round(3)]).T, 
-                                 index=shap_values.feature_names, 
-                                 columns=["SHAP_Strength","SHAP", "Data"])
-        shap_data = shap_data.sort_values(by="SHAP_Strength", ascending=False)[:50]
-    else :
-        shap_data = None
+    shap_data = client_shap_data(client_id)
     return json.dumps({'SHAP_data' : shap_data.to_json()})
 
 if __name__ == '__main__':
