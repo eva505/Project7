@@ -9,8 +9,6 @@ import plotly.express as px
 #whether or not we are connecting to the local server or Heroku
 local = False
 
-local = False
-
 def initialize():
     if 'home' not in st.session_state :
         st.session_state.home = True
