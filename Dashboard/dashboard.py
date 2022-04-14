@@ -10,7 +10,7 @@ from plotly.subplots import make_subplots
 
 
 #whether or not we are connecting to the local server or Heroku
-local = False
+local = True
 ver_api = 'dev2'
 
 def initialize():
@@ -144,7 +144,7 @@ def create_feature_comparison(feature_data, select, vline):
     return fig
 
 LOCALHOST_URI = 'http://127.0.0.1:5000'
-REMOTEHOST_URI = 'https://home-credit-score-'+ver_api'.herokuapp.com'
+REMOTEHOST_URI = 'https://home-credit-score-'+ver_api+'.herokuapp.com'
 if local :
     HOST_URI = LOCALHOST_URI
 else :

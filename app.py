@@ -6,6 +6,7 @@ import joblib
 import pandas as pd
 import numpy as np
 import shap
+import lightgbm
 
 #where to get data from - local or GitHub, if GitHub then choose the correct branch
 local = False
@@ -22,10 +23,12 @@ MODELNAME = 'LGBM'
 if local:
     CLIENTDATA = 'data_processed_min.csv'
     SHAPVALUESNAME = 'LGBM_SHAPvalues_min'
+    PREDVALUESNAME = 'LGBM_pred_min.csv'
+
 else :
     CLIENTDATA = 'data_processed_min_min.csv'
     SHAPVALUESNAME = 'LGBM_SHAPvalues_min_min'
-
+    PREDVALUESNAME = 'LGBM_pred_min_min.csv'
 FEATURES = 'features.csv'
 SHAPNAME = 'LGBM_SHAP'
 
@@ -38,9 +41,9 @@ FEATURE_URL = DATAPATH + FEATURES
 MODEL_URL = DATAPATH + MODELNAME
 SHAP_URL = DATAPATH + SHAPNAME
 SHAPVALUES_URL = DATAPATH + SHAPVALUESNAME
-
+PREDVALUES_URL = DATAPATH + PREDVALUESNAME
 #load data
-df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
+df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0')#.sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
 client_defaulted = df['TARGET']
 client_ids_json = client_ids.to_json(orient='records')
@@ -55,6 +58,7 @@ if local :
         explainer = shap.Explainer.load(e)
 else :
     estimator = joblib.load(urllib.request.urlopen(MODEL_URL))
+    y_preds = pd.read_csv(PREDVALUES_URL, sep=',').drop(columns='Unnamed: 0')
     #with urllib.request.urlopen(SHAP_URL) as e:
         #explainer = shap.Explainer.load(e)
     explainer = joblib.load(urllib.request.urlopen(SHAPVALUES_URL))
@@ -125,7 +129,7 @@ def create_mask(filter_dict, client_id):
 #send client ids
 @app.route('/client_ids', methods=['POST'])
 def return_client_ids(client_ids=client_ids):
-    client_ids = client_ids.to_json(orient='records')
+    client_ids = client_ids.sort_values().to_json(orient='records')
     return client_ids
 
 #send client data
@@ -147,7 +151,10 @@ def return_prediction(estimator=estimator):
     client_id = json.loads(request.data)["client_id"]
     client_data = df[client_ids == int(client_id)]
     if len(client_data) :
-        y_pred = estimator.predict_proba(client_data)[:, 1][0]
+        if local:
+            y_pred = estimator.predict_proba(client_data)[:, 1][0]
+        else :
+            y_pred = y_preds[y_preds['SK_ID_CURR']==client_id]['PRED'].values[0]
     else :
         y_pred = None
     return json.dumps({'pred' : y_pred})
