@@ -1,5 +1,6 @@
 from threading import local
 import streamlit as st
+import lightgbm
 import pandas as pd
 import numpy as np
 import requests
@@ -9,7 +10,7 @@ from plotly.subplots import make_subplots
 
 
 #whether or not we are connecting to the local server or Heroku
-local = False
+local = True
 
 def initialize():
     if 'home' not in st.session_state :

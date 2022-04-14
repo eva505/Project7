@@ -9,7 +9,7 @@ import shap
 
 #where to get data from - local or GitHub, if GitHub then choose the correct branch
 local = False
-git_branch = 'dev0'
+git_branch = 'dev2'
 
 app = Flask(__name__)
 @app.route('/')
@@ -18,14 +18,16 @@ def index():
 
 LOCAL_PATH = os.getcwd()  + '//Data//'
 REMOTE_PATH = 'https://raw.githubusercontent.com/eva505/Project7/'+git_branch+'/Data/'
-MODELNAME = 'LogRegr0'
+MODELNAME = 'LGBM'
 if local:
     CLIENTDATA = 'data_processed_min.csv'
+    SHAPVALUESNAME = 'LGBM_SHAPvalues_min'
 else :
     CLIENTDATA = 'data_processed_min_min.csv'
+    SHAPVALUESNAME = 'LGBM_SHAPvalues_min_min'
+
 FEATURES = 'features.csv'
-SHAPNAME = 'LogRegr0_SHAP'
-SHAPVALUESNAME = 'LogRegr0_SHAPvalues'
+SHAPNAME = 'LGBM_SHAP'
 
 if local :
     DATAPATH = LOCAL_PATH
@@ -64,8 +66,12 @@ def client_shap_data(client_id) :
     if len(client_data) :
         if local :
             shap_value = explainer(client_data, max_evals=max_evals_explainer)[0]
+            shap_value.values = shap_value.values[:,1]
+            shap_value.base_values = shap_value.base_values[1]
         else :
-            shap_value = explainer[client_ids[client_ids == int(client_id)].index.values[0]]   
+            shap_value = explainer[client_ids[client_ids == int(client_id)].index.values[0]]
+            shap_value.value = shap_value.value[:,1]
+            shap_value.base_values = shap_value.base_values[1]
         shap_data = pd.DataFrame(np.array([abs(shap_value.values), shap_value.values, shap_value.data.round(3)]).T, 
                                   index=shap_value.feature_names, 
                                   columns=["SHAP_Strength","SHAP", "Data"])
