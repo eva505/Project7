@@ -40,7 +40,6 @@ SHAP_URL = DATAPATH + SHAPNAME
 SHAPVALUES_URL = DATAPATH + SHAPVALUESNAME
 
 #load data
-print(DATA_URL)
 df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
 client_defaulted = df['TARGET']
@@ -71,7 +70,7 @@ def client_shap_data(client_id) :
             shap_value.base_values = shap_value.base_values[1]
         else :
             shap_value = explainer[client_ids[client_ids == int(client_id)].index.values[0]]
-            shap_value.value = shap_value.value[:,1]
+            shap_value.values = shap_value.values[:,1]
             shap_value.base_values = shap_value.base_values[1]
         shap_data = pd.DataFrame(np.array([abs(shap_value.values), shap_value.values, shap_value.data.round(3)]).T, 
                                   index=shap_value.feature_names, 
@@ -104,6 +103,7 @@ def create_select(series, func_type, value, client_index):
 
 def create_mask(filter_dict, client_id):
     select = pd.Series([True]*len(df), name='Filter')
+    print(client_id)
     try:
         client_index = df[client_ids == client_id].index.values[0]
     except:
