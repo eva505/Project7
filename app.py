@@ -154,7 +154,7 @@ def return_prediction(estimator=estimator):
         if local:
             y_pred = estimator.predict_proba(client_data)[:, 1][0]
         else :
-            y_pred = y_preds[y_preds['SK_ID_CURR']==client_id]['PRED'].values[0]
+            y_pred = y_preds[y_preds['SK_ID_CURR']==int(client_id)]['PRED'].values[0]
     else :
         y_pred = None
     return json.dumps({'pred' : y_pred})
