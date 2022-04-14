@@ -4,14 +4,18 @@ A home credit scoring API, which returns the probability of a client defaulting 
 
 ## How-to-Launch-App
 
-Open the following link in a webbrowser :  
-https://share.streamlit.io/eva505/project7/dev0/Dashboard/dashboard.py
+Open the following link in a webbrowser for the newest version : 
+https://share.streamlit.io/eva505/project7/dev2/Dashboard/dashboard.py
 
+Version 0.2.0
+https://share.streamlit.io/eva505/project7/dev0/Dashboard/dashboard.py
 
 Version 0.1.1:
 https://share.streamlit.io/eva505/project7/main/Dashboard/dashboard.py
 
 ## Description
+
+The prediction of whether a client will default or not is made with a LightBGM model (https://lightgbm.readthedocs.io/en/latest/) and the feature importances are determined through Shapely values (SHAP).
 
 ## GitHubLink to the most current developments
 
@@ -22,6 +26,8 @@ https://github.com/eva505/Project7/tree/dev2/Data
 Eva Bookjans
 
 ## Version History
+* 0.3
+    * Implemented LGBM model
 * 0.2
     * 0.2.0 Updated README
     * Added "Added 'Feature Comparison' Functionality
