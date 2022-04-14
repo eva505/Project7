@@ -10,16 +10,16 @@ https://share.streamlit.io/eva505/project7/dev2/Dashboard/dashboard.py
 Version 0.2.0
 https://share.streamlit.io/eva505/project7/dev0/Dashboard/dashboard.py
 
-Version 0.1.1:
-https://share.streamlit.io/eva505/project7/main/Dashboard/dashboard.py
 
 ## Description
 
 The prediction of whether a client will default or not is made with a LightBGM model (https://lightgbm.readthedocs.io/en/latest/) and the feature importances are determined through Shapely values (SHAP).
 
-## GitHubLink to the most current developments
+## GitHubLinks
 
 https://github.com/eva505/Project7/tree/dev2/Data
+
+https://github.com/eva505/Project7/tree/main/Data
 
 ## Authors
 
