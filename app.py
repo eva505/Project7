@@ -40,6 +40,7 @@ SHAP_URL = DATAPATH + SHAPNAME
 SHAPVALUES_URL = DATAPATH + SHAPVALUESNAME
 
 #load data
+print(DATA_URL)
 df = pd.read_csv(DATA_URL, sep=',').drop(columns='Unnamed: 0').sort_values(by='SK_ID_CURR')
 client_ids = df['SK_ID_CURR']
 client_defaulted = df['TARGET']
