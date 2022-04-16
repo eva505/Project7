@@ -18,7 +18,9 @@ https://home-credit-score-dev2.herokuapp.com/
 
 For a specific client go to https://home-credit-score-dev2.herokuapp.com/prediction/client_id
 
-Examples : 
+The client_id has to be an integer.
+
+Examples for valid a client_id that are in the data base : 
 * 241571 - a client that did not default
 * 429767 - a client that did default
 
@@ -39,7 +41,7 @@ Eva Bookjans
 
 ## Version History
 * 0.3
-    * 0.3.1 Client Data available through API
+    * 0.3.1 Prediction for Client available through API
     * Implemented LGBM model
 * 0.2
     * 0.2.0 Updated README
