@@ -4,11 +4,23 @@ A home credit scoring API, which returns the probability of a client defaulting 
 
 ## How-to-Launch-App
 
+### To access the Dashboard :
+
 Open the following link in a webbrowser for the newest version : 
 https://share.streamlit.io/eva505/project7/dev2/Dashboard/dashboard.py
 
 Version 0.2.0
 https://share.streamlit.io/eva505/project7/dev0/Dashboard/dashboard.py
+
+### To access the API:
+
+https://home-credit-score-dev2.herokuapp.com/
+
+For a specific client go to https://home-credit-score-dev2.herokuapp.com/prediction/client_id
+
+Examples : 
+* 241571 - a client that did not default
+* 429767 - a client that did default
 
 
 ## Description
@@ -27,6 +39,7 @@ Eva Bookjans
 
 ## Version History
 * 0.3
+    * 0.3.1 Client Data available through API
     * Implemented LGBM model
 * 0.2
     * 0.2.0 Updated README

@@ -1,0 +1,9 @@
+<h1>Prediction of Default Risk for Client No: {{client_id}}</h1>
+<h2> Model Output: {{y_pred}} </h2>
+{% if defaulted == 1 %}
+<h2>In reality, the client defaulted on their credit.</h2>    
+{% elif defaulted == 0 %}
+<h2>In reality, the client has reimboursed their credit in full.</h2>    
+{% else %}
+<h2>We do not have any information on whether the client has defaulted or not.</h2>    
+{% endif %}

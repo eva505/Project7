@@ -1,5 +1,5 @@
 from distutils.log import debug
-from flask import Flask, request
+from flask import Flask, request, redirect, url_for, render_template
 import os, json, sys
 import urllib.request
 import joblib
@@ -144,20 +144,42 @@ def return_client_data(df=df):
     return json.dumps({'data' : client_data.to_json()})
 
 #send client default risk
-@app.route('/prediction', methods=['POST'])
+@app.route('/prediction', methods=['POST', 'GET'])
+@app.route('/prediction/', methods=['POST', 'GET'])
 def return_prediction(estimator=estimator):
     #utiliser la fonction présedent
     #client_data = pd.read_json(json.loads(request.data)["client_data"])
-    client_id = json.loads(request.data)["client_id"]
-    client_data = df[client_ids == int(client_id)]
-    if len(client_data) :
+    if request.method == 'POST':
+        client_id = json.loads(request.data)["client_id"]
+        client_data = df[client_ids == int(client_id)]
+        if len(client_data) :
+            if local:
+                y_pred = estimator.predict_proba(client_data)[:, 1][0]
+            else :
+                y_pred = y_preds[y_preds['SK_ID_CURR']==int(client_id)]['PRED'].values[0]
+        else :
+            y_pred = None
+        return json.dumps({'pred' : y_pred})
+    else :
+        client_id=0
+        return redirect(url_for("client", client_id=client_id))
+
+@app.route('/prediction/<int:client_id>')
+def client(client_id):
+    if client_id not in client_ids.values :
+        return f"<h1>{client_id} does not seem to be in the Database</h1>"
+    else  :
         if local:
+            client_data = df[client_ids == int(client_id)]
             y_pred = estimator.predict_proba(client_data)[:, 1][0]
         else :
             y_pred = y_preds[y_preds['SK_ID_CURR']==int(client_id)]['PRED'].values[0]
-    else :
-        y_pred = None
-    return json.dumps({'pred' : y_pred})
+        defaulted = client_defaulted[client_ids == int(client_id)].values[0]
+        return render_template("client.html", client_id=str(client_id), 
+                                              y_pred=str(y_pred.round(3)),
+                                              defaulted=defaulted)
+
+
 
 #send feature importance
 @app.route('/shapvalues', methods=['POST'])
